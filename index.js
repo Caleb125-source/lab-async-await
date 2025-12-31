@@ -10,13 +10,13 @@ function displayPosts(posts) {
         // Create list item for one post
         const listItem = document.createElement('li');
         // Create post title
-        const h3 = document.createElement('h3');
-        h3.textContent = post.title;
+        const h1 = document.createElement('h1');
+        h1.textContent = post.title;
         // Create post body
         const p = document.createElement('p');
         p.textContent = post.body;
         // Append title and body to list item
-        listItem.appendChild(h3);
+        listItem.appendChild(h1);
         listItem.appendChild(p);
         // Append list item to ul
         postList.appendChild(listItem);
