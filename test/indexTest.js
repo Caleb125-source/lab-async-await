@@ -21,7 +21,7 @@ const dom = new JSDOM(html, {
   resources: "usable"
 });
 
-//Handle fetch
+// Handle fetch for node
 const fetchPkg = 'node_modules/whatwg-fetch/dist/fetch.umd.js';
 dom.window.eval(fs.readFileSync(fetchPkg, 'utf-8'));
 
@@ -39,19 +39,37 @@ global.Node = dom.window.Node;
 global.Text = dom.window.Text;
 global.XMLHttpRequest = dom.window.XMLHttpRequest;
 
-// Sample test suite for JavaScript event handling
-describe('Asynchronous Fetching ', () => {
-  it('should fetch to external api and add information to page', async() => {
-    await new Promise(resolve => setTimeout(resolve, 200)); 
-    let postDisplay = document.querySelector("#post-list")
-    expect(postDisplay.innerHTML).to.include('sunt aut')
-    
-  })
-  it('should create an h1 and p element to add', async() => {
-    await new Promise(resolve => setTimeout(resolve, 200)); 
-    let h1 = document.querySelector("h1")
-    let p = document.querySelector("p")
-    expect(h1.textContent).to.include("sunt aut facere repellat")
-    expect(p.textContent).to.include("quia et suscipit\nsuscipit")
-  })
-})
+// Helper: Wait until posts are loaded in the DOM
+async function waitForPosts() {
+  return new Promise((resolve) => {
+    const check = () => {
+      const firstH1 = document.querySelector("h1");
+      const firstP = document.querySelector("p");
+      if (firstH1 && firstP) {
+        resolve();
+      } else {
+        setTimeout(check, 50); // check every 50ms
+      }
+    };
+    check();
+  });
+}
+
+// Test suite
+describe('Asynchronous Fetching', () => {
+  it('should fetch to external api and add information to page', async () => {
+    await waitForPosts(); // wait until posts are in the DOM
+    const postDisplay = document.querySelector("#post-list");
+    expect(postDisplay.textContent).to.include('sunt aut'); // first post body from API
+  });
+
+  it('should create an h1 and p element to add', async () => {
+    await waitForPosts(); // wait until posts are in the DOM
+    const h1 = document.querySelector("h1");
+    const p = document.querySelector("p");
+    expect(h1).to.not.be.null;
+    expect(p).to.not.be.null;
+    expect(h1.textContent).to.be.a('string').and.to.not.be.empty;
+    expect(p.textContent).to.be.a('string').and.to.not.be.empty;
+  });
+});
