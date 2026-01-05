@@ -38,3 +38,4 @@ async function fetchPostsWithAsync() {
 }
 // Call the function to fetch and display posts
 fetchPostsWithAsync();
+
